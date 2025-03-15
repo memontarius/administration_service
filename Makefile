@@ -43,7 +43,7 @@ mig:
 migr:
 	docker exec $(cnn) php artisan migrate:rollback
 
-seed:
+seed: clr
 	docker exec $(cnn) php artisan db:seed --class=$(c)
 
 migrf:
