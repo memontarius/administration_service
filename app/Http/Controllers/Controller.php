@@ -2,38 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
+use App\Models\User;
+use App\Services\ResponseService;
 
 abstract class Controller
 {
-    protected function getSuccessfulResponse(array $payload = null, string $message = ''): JsonResponse
+    protected function getUserOrFail(int $userId)
     {
-        $responseData = [
-            'success' => true,
-        ];
-
-        if (!empty($message)) {
-            $responseData['message'] = $message;
+        $user = User::find($userId);
+        if (empty($user)) {
+            abort(ResponseService::failed("User not found", statusCode: 404));
         }
-
-        if (!empty($payload)) {
-            $responseData['data'] = $payload;
-        }
-
-        return response()->json($responseData);
-    }
-
-    protected function getFailedResponse(string $message, array $errors = null, int $statusCode = 200): JsonResponse
-    {
-        $responseData = [
-            'success' => false,
-            'message' => $message
-        ];
-
-        if (!empty($errors)) {
-            $responseData['errors'] = $errors;
-        }
-
-        return response()->json($responseData, $statusCode);
+        return $user;
     }
 }

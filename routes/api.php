@@ -1,20 +1,20 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::post('/login', [AuthController::class, 'authenticate']); // +
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/login', [AuthController::class, 'login']); // +
+Route::post('/logout', [AuthController::class, 'logout']); // +
 
-Route::get('/users', [UserController::class, 'index']); // +-
-Route::get('/users{user}', [UserController::class, 'show']);
+Route::get('/users', [UserController::class, 'index']); // ++
+Route::get('/users/{user}', [UserController::class, 'show'])->where('user', '[0-9]+'); // +
 Route::post('/users', [UserController::class, 'create']); // +
-Route::patch('/users/{user}', [UserController::class, 'update']);
+Route::patch('/users/{user}', [UserController::class, 'update']); // +
 Route::put('/users/{user}/ban', [UserController::class, 'ban']);
 Route::put('/users/{user}/unban', [UserController::class, 'unban']);
-Route::put('/users/{user}/password', [UserController::class, 'changePassword']);
+Route::put('/users/{user}/change-password', [UserController::class, 'updatePassword']); // +
 
 
 Route::group([

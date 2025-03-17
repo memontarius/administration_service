@@ -3,12 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Laravel\Passport\AuthCode;
-use Laravel\Passport\Client;
+use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\Passport;
-use Laravel\Passport\PersonalAccessClient;
-use Laravel\Passport\RefreshToken;
-use Laravel\Passport\Token;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Password::defaults(function () {
+            return Password::min(8)
+                ->max(20)
+                ->mixedCase()
+                ->numbers()
+                ->symbols();
+        });
     }
 }
