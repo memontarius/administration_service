@@ -12,11 +12,8 @@ prepare-env:
 	cp -n .env.example .env || true
 	php artisan key:generate
 
-install:
+i:
 	composer install
-	npm i
-	npm run build
-
 
 # Docker _____________
 up:
