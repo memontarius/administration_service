@@ -15,10 +15,15 @@ prepare-env:
 i:
 	composer install
 
+setup-passport:
+	make run cmd=passport:keys
+	docker exec -it $(cnn) chown -R www-data:www-data /var/www
+
+setup: i prepare-env
+
 # Docker _____________
 up:
 	docker compose --file $(DOCKER_FILE) up -d
-	docker exec -it $(cnn) chown -R www-data:www-data /var/www
 
 dw:
 	docker compose --file $(DOCKER_FILE) down
