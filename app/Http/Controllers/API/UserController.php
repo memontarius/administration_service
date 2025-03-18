@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Services\ResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class  UserController extends Controller
 {
@@ -53,6 +54,8 @@ class  UserController extends Controller
     public function show(Request $request, int $userId): JsonResponse
     {
         $user = $this->getUserOrFail($userId);
+        Gate::authorize('view', $user);
+
         $userResource = new DetailedResource($user);
 
         return ResponseService::success($userResource);
@@ -61,6 +64,8 @@ class  UserController extends Controller
     public function update(UpdateRequest $request, int $userId): JsonResponse
     {
         $user = $this->getUserOrFail($userId);
+        Gate::authorize('update', $user);
+
         $validatedData = $request->validated();
         $user->update($validatedData);
 
@@ -74,6 +79,8 @@ class  UserController extends Controller
     public function updatePassword(UpdatePasswordRequest $request, int $userId): JsonResponse
     {
         $user = $this->getUserOrFail($userId);
+        Gate::authorize('updatePassword', $user);
+
         $user->update($request->validated());
 
         return ResponseService::success(message: 'User password successfully updated');
@@ -82,9 +89,13 @@ class  UserController extends Controller
     public function ban(CreateBanRequest $request, int $userId): JsonResponse
     {
         $user = $this->getUserOrFail($userId);
+        Gate::authorize('ban', $user);
+
         if (!$user->bans->isEmpty()) {
             return ResponseService::failed(message: 'User already banned', statusCode: 400);
         }
+
+        $user->tokens()->delete();
 
         Ban::create([
             'user_id' => $userId,
@@ -97,6 +108,8 @@ class  UserController extends Controller
     public function unban(int $userId): JsonResponse
     {
         $user = $this->getUserOrFail($userId);
+        Gate::authorize('ban', $user);
+
         $bans = $user->bans();
 
         if (!$bans->exists()) {

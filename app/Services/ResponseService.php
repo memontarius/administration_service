@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -51,5 +52,15 @@ final class ResponseService
     public static function abortAsUnauthenticated(array $errors = null): JsonResponse
     {
         abort(self::failed('Unauthenticated', $errors, 401));
+    }
+
+    public static function abortAsUnauthorized(array $errors = null): JsonResponse
+    {
+        abort(self::failed('Unauthorized', $errors, 403));
+    }
+
+    public static function abortAsBanned(array $errors = null): JsonResponse
+    {
+        abort(self::failed('You are banned', $errors, 403));
     }
 }
