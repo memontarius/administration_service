@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 final class ResponseService
 {
-    public static function success(JsonResource $resource = null, string $message = ''): JsonResponse
+    public static function success(JsonResource|array $resource = null, string $message = ''): JsonResponse
     {
         $responseData = [
             'success' => true,
@@ -41,5 +41,15 @@ final class ResponseService
     public static function abortAsNotFound(): JsonResponse
     {
         abort(self::failed('Not found', statusCode: 404));
+    }
+
+    public static function abortAsInvalidRequest(array $errors = null): JsonResponse
+    {
+        abort(self::failed('Invalid request', $errors, 422));
+    }
+
+    public static function abortAsUnauthenticated(array $errors = null): JsonResponse
+    {
+        abort(self::failed('Unauthenticated', $errors, 401));
     }
 }

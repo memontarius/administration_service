@@ -2,13 +2,13 @@
 
 namespace App\Models\Enums;
 
-enum UserRole: string
+enum Modules: string
 {
     case ADMIN = 'admin';
     case ANALYTIC = 'analytic';
-    case NOTIFICATION_MANAGER = 'notification_manager';
-    case FEED_MANAGER = 'feed_manager';
-    case TICKET_MANAGER = 'ticket_manager';
+    case NOTIFICATIONS = 'notification';
+    case FEED = 'feed';
+    case TICKETS = 'tickets';
     case SUPPORT = 'support';
 
     public static function values(): array

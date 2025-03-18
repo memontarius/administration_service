@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\Request;
-use Illuminate\Validation\Rules\Password;
 
-class UpdatePasswordRequest extends Request
+class LoginRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +22,8 @@ class UpdatePasswordRequest extends Request
     public function rules(): array
     {
         return [
-            'password' => ['required', 'confirmed', Password::default()],
-            'password_confirmation' => 'required',
+            'login' => 'required',
+            'password' => 'required'
         ];
     }
 }

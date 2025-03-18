@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 
 use App\Models\Enums\UserPermission;
-use App\Models\Enums\UserRole;
+use App\Models\Enums\Modules;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +22,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         $this->truncateAllTables();
 
-        $this->insert($roleTable, UserRole::cases());
+        $this->insert($roleTable, Modules::cases());
         $this->insert($permissionTable, UserPermission::cases());
 
         $this->assignPermissionsToRoles();
@@ -54,7 +54,7 @@ class RoleAndPermissionSeeder extends Seeder
      */
     public function assignPermissionsToRoles(): void
     {
-        $admin = Role::where('name', UserRole::ADMIN)->first();
+        $admin = Role::where('name', Modules::ADMIN)->first();
         $admin->givePermissionTo(UserPermission::USER_MANAGEMENT);
     }
 
@@ -63,12 +63,12 @@ class RoleAndPermissionSeeder extends Seeder
      */
     public function assignRolesToUsers(): void
     {
-        $roles = UserRole::cases();
+        $roles = Modules::cases();
         $roleCount = count($roles);
 
         foreach (User::all() as $user) {
             $role = $user->name == 'admin'
-                ? UserRole::ADMIN
+                ? Modules::ADMIN
                 : $roles[rand(0, $roleCount - 1)]->value;
 
             $user->assignRole($role);

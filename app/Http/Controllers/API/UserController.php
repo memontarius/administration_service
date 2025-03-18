@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\CreateBanRequest;
 use App\Http\Requests\User\CreateRequest;
 use App\Http\Requests\User\UpdatePasswordRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Http\Resources\User\DetailedResource;
-use App\Http\Resources\User\PaginatedResource;
+use App\Http\Resources\User\IndexResource;
+use App\Models\Ban;
 use App\Models\User;
 use App\Services\ResponseService;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +35,7 @@ class  UserController extends Controller
             $users = User::with('roles')->paginate($perPage);
         }
 
-        return ResponseService::success(new PaginatedResource($users));
+        return ResponseService::success(new IndexResource($users));
     }
 
     public function create(CreateRequest $request): JsonResponse
@@ -59,10 +61,11 @@ class  UserController extends Controller
     public function update(UpdateRequest $request, int $userId): JsonResponse
     {
         $user = $this->getUserOrFail($userId);
-        $user->update($request->validated());
+        $validatedData = $request->validated();
+        $user->update($validatedData);
 
-        if (isset($validated['scopes'])) {
-            $user->syncRoles($validated['scopes']);
+        if (isset($validatedData['scopes'])) {
+            $user->syncRoles($validatedData['scopes']);
         }
 
         return ResponseService::success(message: 'User successfully updated');
@@ -74,5 +77,34 @@ class  UserController extends Controller
         $user->update($request->validated());
 
         return ResponseService::success(message: 'User password successfully updated');
+    }
+
+    public function ban(CreateBanRequest $request, int $userId): JsonResponse
+    {
+        $user = $this->getUserOrFail($userId);
+        if (!$user->bans->isEmpty()) {
+            return ResponseService::failed(message: 'User already banned', statusCode: 400);
+        }
+
+        Ban::create([
+            'user_id' => $userId,
+            ...$request->validated()
+        ]);
+
+        return ResponseService::success(message: 'User successfully banned');
+    }
+
+    public function unban(int $userId): JsonResponse
+    {
+        $user = $this->getUserOrFail($userId);
+        $bans = $user->bans();
+
+        if (!$bans->exists()) {
+            return ResponseService::failed(message: 'User has no bans', statusCode: 404);
+        }
+
+        $bans->delete();
+
+        return ResponseService::success(message: 'User successfully unbanned');
     }
 }

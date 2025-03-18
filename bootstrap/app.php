@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AddUserIdToRequest;
 use App\Services\ResponseService;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;

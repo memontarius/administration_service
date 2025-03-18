@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Models\Traits\HasTable;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,5 +56,10 @@ class User extends Model implements Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function bans(): HasMany
+    {
+        return $this->hasMany(Ban::class);
     }
 }

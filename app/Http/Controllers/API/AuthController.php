@@ -3,38 +3,26 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use App\Services\ResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'login' => 'required',
-            'password' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->getFailedResponse(
-                'Validation input error.',
-                $validator->errors()->toArray(), 400);
-        }
-
-        $credentials = $validator->validated();
+        $credentials = $request->validated();
         $user = User::where('login', $credentials['login'])->get()->first();
 
         if (!$user || !password_verify($credentials['password'], $user->password)) {
-            return $this->getFailedResponse('Credentials are invalid.');
+            return ResponseService::failed('Credentials are invalid.', statusCode: 401);
         }
 
-        $responseData = [
+        return ResponseService::success([
             'token' => $user->createToken('token')->accessToken
-        ];
-
-        return $this->getSuccessfulResponse(payload: $responseData);
+        ]);
     }
 
     public function logout(Request $request): JsonResponse
@@ -42,13 +30,13 @@ class AuthController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return $this->getFailedResponse('Unauthenticated.', statusCode: 401);
+            ResponseService::abortAsUnauthenticated();
         }
 
-        $user->tokens->each(function($token, $key) {
+        $user->tokens->each(function($token) {
             $token->delete();
         });
 
-        return $this->getSuccessfulResponse(message: 'Successfully logged out.');
+        return ResponseService::success(message: 'Successfully logged out.');
     }
 }

@@ -9,13 +9,17 @@ Route::post('/login', [AuthController::class, 'login']); // +
 Route::post('/logout', [AuthController::class, 'logout']); // +
 
 Route::get('/users', [UserController::class, 'index']); // ++
-Route::get('/users/{user}', [UserController::class, 'show'])->where('user', '[0-9]+'); // +
 Route::post('/users', [UserController::class, 'create']); // +
-Route::patch('/users/{user}', [UserController::class, 'update']); // +
-Route::put('/users/{user}/ban', [UserController::class, 'ban']);
-Route::put('/users/{user}/unban', [UserController::class, 'unban']);
-Route::put('/users/{user}/change-password', [UserController::class, 'updatePassword']); // +
 
+Route::prefix('/users/{user}')
+    ->where(['user', '[0-9]+'])
+    ->group(function () {
+        Route::get('/', [UserController::class, 'show']); // +
+        Route::patch('/', [UserController::class, 'update']); // +
+        Route::put('/ban', [UserController::class, 'ban']); // +
+        Route::put('/unban', [UserController::class, 'unban']); // +
+        Route::put('/change-password', [UserController::class, 'updatePassword']); // +
+    });
 
 Route::group([
     'as' => 'passport.',
@@ -37,7 +41,7 @@ Route::group([
 
     $guard = config('passport.guard', null);
 
-    Route::middleware(['web', $guard ? 'auth:'.$guard : 'auth'])->group(function () {
+    Route::middleware(['web', $guard ? 'auth:' . $guard : 'auth'])->group(function () {
         Route::post('/token/refresh', [
             'uses' => 'TransientTokenController@refresh',
             'as' => 'token.refresh',

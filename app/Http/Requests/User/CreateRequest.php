@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests\User;
 
-use App\Services\ResponseService;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Request;
 
-class CreateRequest extends FormRequest
+class CreateRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,10 +30,5 @@ class CreateRequest extends FormRequest
             'password' => 'required|string',
             'scopes.*' => "distinct|exists:$roleTable,name"
         ];
-    }
-
-    public function failedValidation(Validator $validator): void
-    {
-        abort(ResponseService::failed('Invalid request', $validator->errors()->toArray(), 422));
     }
 }
