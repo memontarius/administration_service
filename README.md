@@ -18,25 +18,20 @@
     make prepare-env
     ```
 
-3. Настроить параметры в .env
+3. Настроить параметры в .env если необходимо
     ```dotenv
-    DB_USERNAME=your_user
-    DB_PASSWORD=your_password
+    DB_USERNAME=
+    DB_PASSWORD=
     ```
 
 4. Запуск контейнеров
     ```sh
     make up
     ```
-   
-5. Миграция
+
+5. Подготовить базу (миграция, сидинг, генераци ключей для Passport)
     ```sh
-    make mig
-    ```
-   
-6. Заполнить таблицы
-    ```sh
-    make seed
+    make setup
     ```
 
 Postman коллекция:

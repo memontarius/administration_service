@@ -19,7 +19,7 @@ setup-passport:
 	make run cmd=passport:keys
 	docker exec -it $(cnn) chown -R www-data:www-data /var/www
 
-setup: i prepare-env
+setup: mig seed setup-passport
 
 # Docker _____________
 up:
